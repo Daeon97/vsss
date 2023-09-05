@@ -33,7 +33,7 @@ class _FirstPageState extends State<FirstPage> {
 
   @override
   Widget build(BuildContext context) => ScreenScaffold(
-    useScaffold: false,
+        useScaffold: false,
         child: Column(
           children: [
             Image.asset(
@@ -41,6 +41,7 @@ class _FirstPageState extends State<FirstPage> {
             ),
             Text(
               helloLiteral,
+              textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(
@@ -48,6 +49,7 @@ class _FirstPageState extends State<FirstPage> {
             ),
             const Text(
               whatIsYourNameAndCourseOfStudyLiteral,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(
               height: spacing,

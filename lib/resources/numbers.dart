@@ -13,3 +13,6 @@ const two = 2;
 // Others
 const pageViewTransitionAnimationDurationMilliseconds = 500;
 const courseOfStudyDropdownItemCount = 3;
+const requestConnectTimeoutSeconds = 10;
+const requestReceiveTimeoutSeconds = 10;
+const requestSendTimeoutSeconds = 10;

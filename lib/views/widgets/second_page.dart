@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vsss/cubits/onboarding_cubit/onboarding_cubit.dart';
+import 'package:vsss/cubits/user_cubit/user_cubit.dart';
 import 'package:vsss/resources/numbers.dart';
 import 'package:vsss/resources/strings.dart';
 import 'package:vsss/views/widgets/screen_scaffold.dart';
@@ -23,15 +24,31 @@ class SecondPage extends StatelessWidget {
             Image.asset(
               welcomeIllustrationPath,
             ),
-            Text(
-              welcomeToStudentEaseLiteral,
-              style: Theme.of(context).textTheme.headlineSmall,
+            BlocBuilder<UserCubit, UserState>(
+              builder: (_, userState) => Text(
+                switch (userState.user) {
+                  null => welcomeToStudentEaseLiteral,
+                  _ => welcomeToStudentEaseLiteral +
+                      comma +
+                      whiteSpace +
+                      userState.user!.name
+                          .split(
+                            RegExp(
+                              nameSplitRegexPattern,
+                            ),
+                          )
+                          .first,
+                },
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
             ),
             const SizedBox(
               height: smallSpacing,
             ),
             const Text(
               yourPersonalizedVirtualStudentSupportServiceLiteral,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(
               height: largeSpacing + spacing,

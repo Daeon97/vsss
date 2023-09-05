@@ -10,23 +10,45 @@ class ScreenScaffold extends StatelessWidget {
     bool useSafeArea = true,
     bool centerScrollViewVertically = true,
     EdgeInsetsGeometry? edgeInsetsGeometry,
+    FloatingActionButton? floatingActionButton,
+    String? title,
     super.key,
   })  : _child = child,
         _useScaffold = useScaffold,
         _useSafeArea = useSafeArea,
         _centerScrollViewVertically = centerScrollViewVertically,
-        _edgeInsetsGeometry = edgeInsetsGeometry;
+        _edgeInsetsGeometry = edgeInsetsGeometry,
+        _floatingActionButton = floatingActionButton,
+        _title = title;
 
   final Widget _child;
   final bool _useScaffold;
   final bool _useSafeArea;
   final bool _centerScrollViewVertically;
   final EdgeInsetsGeometry? _edgeInsetsGeometry;
+  final FloatingActionButton? _floatingActionButton;
+  final String? _title;
 
   @override
   Widget build(BuildContext context) => switch (_useScaffold) {
         true => Scaffold(
+            appBar: switch (_title) {
+              null => null,
+              _ => AppBar(
+                  title: Text(
+                    _title!,
+                  ),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.vertical(
+                      bottom: Radius.circular(
+                        largeSpacing,
+                      ),
+                    ),
+                  ),
+                )
+            },
             body: _body1,
+            floatingActionButton: _floatingActionButton,
           ),
         false => _body1
       };

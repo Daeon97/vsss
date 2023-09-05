@@ -3,5 +3,5 @@
 import 'package:flutter/material.dart';
 
 const baseColor = Color(
-  0xFF00B0FF,
+  0xFF6B4FF1,
 );
