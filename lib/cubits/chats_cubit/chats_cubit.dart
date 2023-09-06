@@ -26,6 +26,8 @@ class ChatsCubit extends Cubit<ChatsState> {
     );
   }
 
+
+
   void _failure(
     Failure failure,
   ) =>

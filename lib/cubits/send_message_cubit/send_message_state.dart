@@ -1,26 +1,26 @@
 // ignore_for_file: public_member_api_docs
 
-part of 'message_cubit.dart';
+part of 'send_message_cubit.dart';
 
-abstract final class MessageState extends Equatable {
-  const MessageState();
+abstract final class SendMessageState extends Equatable {
+  const SendMessageState();
 }
 
-final class MessageInitialState extends MessageState {
-  const MessageInitialState();
+final class SendMessageInitialState extends SendMessageState {
+  const SendMessageInitialState();
 
   @override
   List<Object> get props => [];
 }
 
-final class SendingMessageState extends MessageState {
+final class SendingMessageState extends SendMessageState {
   const SendingMessageState();
 
   @override
   List<Object> get props => [];
 }
 
-final class SentMessageState extends MessageState {
+final class SentMessageState extends SendMessageState {
   const SentMessageState({
     required this.result,
   });
@@ -33,7 +33,7 @@ final class SentMessageState extends MessageState {
       ];
 }
 
-final class FailedToSendMessageState extends MessageState {
+final class FailedToSendMessageState extends SendMessageState {
   const FailedToSendMessageState(
     this.failure,
   );

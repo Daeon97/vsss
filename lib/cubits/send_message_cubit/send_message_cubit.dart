@@ -3,22 +3,23 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:vsss/models/failure.dart';
+import 'package:vsss/models/message.dart';
 import 'package:vsss/repositories/chat_repository.dart';
 
-part 'message_state.dart';
+part 'send_message_state.dart';
 
-class MessageCubit extends Cubit<MessageState> {
-  MessageCubit(
+class SendMessageCubit extends Cubit<SendMessageState> {
+  SendMessageCubit(
     ChatRepository chatsRepository,
   )   : _chatsRepository = chatsRepository,
         super(
-          const MessageInitialState(),
+          const SendMessageInitialState(),
         );
 
   final ChatRepository _chatsRepository;
 
   Future<void> sendMessage(
-    String message,
+    Message message,
   ) async {
     emit(
       const SendingMessageState(),

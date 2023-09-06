@@ -2,9 +2,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vsss/cubits/cache_message_cubit/cache_message_cubit.dart';
 import 'package:vsss/cubits/chats_cubit/chats_cubit.dart';
-import 'package:vsss/cubits/message_cubit/message_cubit.dart';
+import 'package:vsss/cubits/delete_chat_cubit/delete_chat_cubit.dart';
 import 'package:vsss/cubits/onboarding_cubit/onboarding_cubit.dart';
+import 'package:vsss/cubits/send_message_cubit/send_message_cubit.dart';
 import 'package:vsss/cubits/user_cubit/user_cubit.dart';
 import 'package:vsss/injection_container.dart';
 import 'package:vsss/resources/colors.dart';
@@ -40,7 +42,13 @@ class App extends StatelessWidget {
         BlocProvider<ChatsCubit>(
           create: (_) => sl(),
         ),
-        BlocProvider<MessageCubit>(
+        BlocProvider<SendMessageCubit>(
+          create: (_) => sl(),
+        ),
+        BlocProvider<DeleteChatCubit>(
+          create: (_) => sl(),
+        ),
+        BlocProvider<CacheMessageCubit>(
           create: (_) => sl(),
         ),
       ];

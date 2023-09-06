@@ -18,6 +18,8 @@ const messageKey = 'message';
 
 // Endpoint
 const baseUrl = 'https://hook.eu1.make.com';
+// Paths
+// const pathSlash = '/';
 
 // .env key names
 const chatPath = 'CHAT_PATH';
@@ -26,6 +28,7 @@ const authorizationToken = 'AUTHORIZATION_TOKEN';
 // Asset paths
 const _assetsPath = 'assets';
 const helloIllustrationPath = '$_assetsPath/hello_illustration.png';
+const robotPath = '$_assetsPath/robot.png';
 const welcomeIllustrationPath = '$_assetsPath/welcome_illustration.png';
 
 // UI literals
@@ -48,6 +51,7 @@ const couldNotSendMessageLiteral = 'Could not send message';
 const initialMessage =
     'Welcome to the StudentEase chat section. How may we help you today';
 const relatedToLiteral = 'related to';
+const deleteLiteral = 'Delete';
 
 // Options
 const option1LongLiteral =
@@ -68,6 +72,8 @@ const whiteSpace = ' ';
 const comma = ',';
 const fullStop = '.';
 const waveEmoji = '👋';
+const fowardSlash = '/';
+const threeDots = '...';
 
 // Regex
 const nameSplitRegexPattern = r'\s';

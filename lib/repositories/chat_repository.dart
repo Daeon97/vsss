@@ -2,6 +2,7 @@
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:vsss/models/message.dart';
 import 'package:vsss/models/chat.dart';
 import 'package:vsss/models/failure.dart';
 import 'package:vsss/resources/numbers.dart';
@@ -12,8 +13,16 @@ import 'package:vsss/utils/helpers/time_util.dart';
 abstract interface class ChatRepository {
   Future<Either<Failure, List<Chat>>> get chats;
 
-  Future<Either<Failure, bool>> sendMessage(
+  Future<Message> cacheMessage(
     String message,
+  );
+
+  Future<Either<Failure, bool>> sendMessage(
+    Message message,
+  );
+
+  Future<void> deleteChatAt(
+    int index,
   );
 }
 
@@ -80,34 +89,62 @@ final class ChatRepositoryImplementation implements ChatRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> sendMessage(
+  Future<Message> cacheMessage(
     String message,
   ) async {
     await _chatOpsService.open(
       chatsBox,
     );
     final nowMilliseconds = TimeUtil.currentDateTimeMilliseconds;
-    final chat = Chat(
+    final userChat = Chat(
       message: message,
       timestamp: nowMilliseconds,
       isReply: false,
       failed: false,
     );
+    final botReplyPlaceholderChat = Chat(
+      message: threeDots,
+      isReply: true,
+      failed: false,
+    );
     await _chatOpsService.add(
       boxName: chatsBox,
-      chat: chat,
+      chat: userChat,
+    );
+    await _chatOpsService.add(
+      boxName: chatsBox,
+      chat: botReplyPlaceholderChat,
+    );
+    return Message(
+      text: message,
+      timestamp: nowMilliseconds,
+    );
+  }
+
+  @override
+  Future<Either<Failure, bool>> sendMessage(
+    Message message,
+  ) async {
+    final chats = _chatOpsService.getAllChats(
+      chatsBox,
     );
 
     try {
       final result = await _chatOpsService.sendMessage(
-        path: dotenv.env[chatPath]!,
+        path: fowardSlash + dotenv.env[chatPath]!,
         queryParameters: <String, String>{
-          messageKey: message,
+          messageKey: message.text,
         },
       );
-      final json = result.data as Map<String, dynamic>;
+      final json = {
+        messageKey: result.data as String,
+      };
       final response = Chat.fromJson(
         json,
+      );
+      await _chatOpsService.deleteAt(
+        boxName: chatsBox,
+        index: chats.length - one,
       );
       final chat = Chat(
         message: response.message,
@@ -123,16 +160,17 @@ final class ChatRepositoryImplementation implements ChatRepository {
         true,
       );
     } catch (_) {
-      final chats = _chatOpsService.getAllChats(
-        chatsBox,
-      );
       await _chatOpsService.deleteAt(
         boxName: chatsBox,
         index: chats.length - one,
       );
+      await _chatOpsService.deleteAt(
+        boxName: chatsBox,
+        index: chats.length - two,
+      );
       final chat = Chat(
-        message: message,
-        timestamp: nowMilliseconds,
+        message: message.text,
+        timestamp: message.timestamp,
         isReply: false,
         failed: true,
       );
@@ -146,5 +184,18 @@ final class ChatRepositoryImplementation implements ChatRepository {
         ),
       );
     }
+  }
+
+  @override
+  Future<void> deleteChatAt(
+    int index,
+  ) async {
+    await _chatOpsService.open(
+      chatsBox,
+    );
+    await _chatOpsService.deleteAt(
+      boxName: chatsBox,
+      index: index,
+    );
   }
 }

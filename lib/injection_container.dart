@@ -2,9 +2,11 @@
 
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
+import 'package:vsss/cubits/cache_message_cubit/cache_message_cubit.dart';
 import 'package:vsss/cubits/chats_cubit/chats_cubit.dart';
-import 'package:vsss/cubits/message_cubit/message_cubit.dart';
+import 'package:vsss/cubits/delete_chat_cubit/delete_chat_cubit.dart';
 import 'package:vsss/cubits/onboarding_cubit/onboarding_cubit.dart';
+import 'package:vsss/cubits/send_message_cubit/send_message_cubit.dart';
 import 'package:vsss/cubits/user_cubit/user_cubit.dart';
 import 'package:vsss/models/chat.dart';
 import 'package:vsss/repositories/chat_repository.dart';
@@ -29,7 +31,17 @@ void registerServices() {
       ),
     )
     ..registerFactory(
-      () => MessageCubit(
+      () => SendMessageCubit(
+        sl(),
+      ),
+    )
+    ..registerFactory(
+      () => DeleteChatCubit(
+        sl(),
+      ),
+    )
+    ..registerFactory(
+      () => CacheMessageCubit(
         sl(),
       ),
     )

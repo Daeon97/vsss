@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vsss/cubits/cache_message_cubit/cache_message_cubit.dart';
 import 'package:vsss/cubits/chats_cubit/chats_cubit.dart';
-import 'package:vsss/cubits/message_cubit/message_cubit.dart';
+import 'package:vsss/cubits/delete_chat_cubit/delete_chat_cubit.dart';
+import 'package:vsss/cubits/send_message_cubit/send_message_cubit.dart';
 import 'package:vsss/cubits/user_cubit/user_cubit.dart';
 import 'package:vsss/resources/colors.dart';
 import 'package:vsss/resources/numbers.dart';
@@ -19,26 +21,70 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  late final ScrollController _chatsListViewScrollController;
+
   @override
   void initState() {
+    _chatsListViewScrollController = ScrollController();
     context.read<ChatsCubit>().chats;
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) =>
-      BlocListener<MessageCubit, MessageState>(
-        listener: (_, messageState) {
-          if (messageState is FailedToSendMessageState ||
-              messageState is SentMessageState) {
-            context.read<ChatsCubit>().chats;
-          }
-        },
+  Widget build(BuildContext context) => MultiBlocListener(
+        listeners: [
+          BlocListener<SendMessageCubit, SendMessageState>(
+            listener: (_, sendMessageState) {
+              if (sendMessageState is FailedToSendMessageState ||
+                  sendMessageState is SentMessageState) {
+                context.read<ChatsCubit>().chats;
+                _chatsListViewScrollController.animateTo(
+                  _chatsListViewScrollController.position.maxScrollExtent,
+                  duration: const Duration(
+                    milliseconds: chatsListViewScrollAnimationDuration,
+                  ),
+                  curve: Curves.easeIn,
+                );
+              }
+            },
+          ),
+          BlocListener<DeleteChatCubit, DeleteChatState>(
+            listener: (_, deleteChatState) {
+              if (deleteChatState is DeletedChatState) {
+                context.read<ChatsCubit>().chats;
+                _chatsListViewScrollController.animateTo(
+                  _chatsListViewScrollController.position.maxScrollExtent,
+                  duration: const Duration(
+                    milliseconds: chatsListViewScrollAnimationDuration,
+                  ),
+                  curve: Curves.easeIn,
+                );
+              }
+            },
+          ),
+          BlocListener<CacheMessageCubit, CacheMessageState>(
+            listener: (_, cacheMessageState) {
+              if (cacheMessageState is CachedMessageState) {
+                context.read<ChatsCubit>().chats;
+                _chatsListViewScrollController.animateTo(
+                  _chatsListViewScrollController.position.maxScrollExtent,
+                  duration: const Duration(
+                    milliseconds: chatsListViewScrollAnimationDuration,
+                  ),
+                  curve: Curves.easeIn,
+                );
+                context.read<SendMessageCubit>().sendMessage(
+                      cacheMessageState.message,
+                    );
+              }
+            },
+          ),
+        ],
         child: ScreenScaffold(
           useScrollView: false,
           centerViewVertically: false,
-          edgeInsetsGeometry: const EdgeInsetsDirectional.symmetric(
-            vertical: spacing,
+          edgeInsetsGeometry: const EdgeInsetsDirectional.only(
+            bottom: spacing,
           ),
           title: chatLiteral,
           child: Column(
@@ -50,13 +96,16 @@ class _ChatScreenState extends State<ChatScreen> {
                       chats: final chatsList,
                     ) =>
                       ListView.builder(
+                        controller: _chatsListViewScrollController,
                         itemCount: chatsList.length,
                         itemBuilder: (_, index) => Padding(
                           padding: EdgeInsetsDirectional.only(
+                            top: index == zero ? spacing : nil,
                             bottom:
                                 index == chatsList.length - one ? nil : spacing,
                           ),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(
                                 width: spacing,
@@ -67,79 +116,147 @@ class _ChatScreenState extends State<ChatScreen> {
                                     child: SizedBox.shrink(),
                                   )
                               },
+                              switch (chatsList[index].isReply) {
+                                true || null => Image.asset(
+                                    robotPath,
+                                    width: chatScreenRobotImageWidthAndHeight,
+                                    height: chatScreenRobotImageWidthAndHeight,
+                                  ),
+                                false => const SizedBox.shrink()
+                              },
                               Expanded(
                                 flex: three,
-                                child: Container(
-                                  padding: const EdgeInsetsDirectional.all(
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(
                                     spacing,
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: switch (chatsList[index].isReply) {
-                                      true || null => Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer,
-                                      false =>
-                                        Theme.of(context).colorScheme.primary
-                                    },
-                                    borderRadius:
-                                        BorderRadiusDirectional.circular(
+                                  onLongPress: switch (
+                                      chatsList[index].isReply) {
+                                    false
+                                        when chatsList[index].failed ?? false =>
+                                      () {
+                                        // ignore: inference_failure_on_function_invocation
+                                        showModalBottomSheet(
+                                          context: context,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadiusDirectional
+                                                    .vertical(
+                                              top: Radius.circular(
+                                                spacing,
+                                              ),
+                                            ),
+                                          ),
+                                          builder: (_) => ListTile(
+                                            title: const Text(
+                                              deleteLiteral,
+                                            ),
+                                            leading: const Icon(
+                                              Icons.delete_forever,
+                                            ),
+                                            onTap: () {
+                                              context
+                                                  .read<DeleteChatCubit>()
+                                                  .deleteChatAt(
+                                                    index,
+                                                  );
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    _ => null
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsetsDirectional.all(
                                       spacing,
                                     ),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        chatsList[index].message,
-                                        textAlign: TextAlign.start,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.copyWith(
-                                              color: switch (
-                                                  chatsList[index].isReply) {
-                                                true || null => null,
-                                                false => Theme.of(context)
-                                                    .colorScheme
-                                                    .background
-                                              },
-                                            ),
+                                    decoration: BoxDecoration(
+                                      color: switch (chatsList[index].isReply) {
+                                        true || null => Theme.of(context)
+                                            .colorScheme
+                                            .secondaryContainer,
+                                        false =>
+                                          Theme.of(context).colorScheme.primary
+                                      },
+                                      borderRadius:
+                                          BorderRadiusDirectional.circular(
+                                        spacing,
                                       ),
-                                      const SizedBox(
-                                        height: threeDouble,
-                                      ),
-                                      Align(
-                                        alignment:
-                                            AlignmentDirectional.centerEnd,
-                                        child: switch (
-                                            chatsList[index].timestamp) {
-                                          null => const SizedBox.shrink(),
-                                          _ => Text(
-                                              TimeUtil.computeHourMinuteAmPm(
-                                                chatsList[index].timestamp!,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          chatsList[index].message,
+                                          textAlign: TextAlign.start,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: switch (
+                                                    chatsList[index].isReply) {
+                                                  true || null => null,
+                                                  false => Theme.of(context)
+                                                      .colorScheme
+                                                      .background
+                                                },
                                               ),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall
-                                                  ?.copyWith(
-                                                    color: switch (
-                                                        chatsList[index]
-                                                            .isReply) {
-                                                      true || null => null,
-                                                      false => Theme.of(context)
-                                                          .colorScheme
-                                                          .background
-                                                          .withOpacity(
-                                                            nilDotEight,
-                                                          )
-                                                    },
-                                                  ),
-                                            ),
-                                        },
-                                      ),
-                                    ],
+                                        ),
+                                        const SizedBox(
+                                          height: threeDouble,
+                                        ),
+                                        Align(
+                                          alignment:
+                                              AlignmentDirectional.centerEnd,
+                                          child: switch (
+                                              chatsList[index].timestamp) {
+                                            null => const SizedBox.shrink(),
+                                            _ => Text(
+                                                TimeUtil.computeHourMinuteAmPm(
+                                                  chatsList[index].timestamp!,
+                                                ),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.copyWith(
+                                                      color: switch (
+                                                          chatsList[index]
+                                                              .isReply) {
+                                                        true || null => null,
+                                                        false =>
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .background
+                                                              .withOpacity(
+                                                                nilDotEight,
+                                                              )
+                                                      },
+                                                    ),
+                                              ),
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
+                              switch (chatsList[index].isReply) {
+                                true || null => const SizedBox.shrink(),
+                                false when chatsList[index].failed ?? false =>
+                                  Row(
+                                    children: [
+                                      const SizedBox(
+                                        width: spacing,
+                                      ),
+                                      Icon(
+                                        Icons.error,
+                                        color:
+                                            Theme.of(context).colorScheme.error,
+                                      ),
+                                    ],
+                                  ),
+                                false => const SizedBox.shrink()
+                              },
                               switch (chatsList[index].isReply) {
                                 true || null => const Expanded(
                                     child: SizedBox.shrink(),
@@ -179,69 +296,84 @@ class _ChatScreenState extends State<ChatScreen> {
                       },
                       bottom: chatScreenBottomLayoutOptionsDy,
                     ),
-                    child: InkWell(
-                      onTap: () => context.read<MessageCubit>().sendMessage(
-                            switch (index) {
-                              zero => option1LongLiteral,
-                              one
-                                  when context.read<UserCubit>().state.user !=
-                                      null =>
-                                option2FirstPartLongLiteral +
-                                    whiteSpace +
-                                    relatedToLiteral +
-                                    whiteSpace +
-                                    context
-                                        .read<UserCubit>()
-                                        .state
-                                        .user!
-                                        .courseOfStudy +
-                                    whiteSpace +
-                                    option2SecondPartLongLiteral,
-                              one
-                                  when context.read<UserCubit>().state.user ==
-                                      null =>
-                                option2FirstPartLongLiteral +
-                                    whiteSpace +
-                                    option2SecondPartLongLiteral,
-                              _ => option3LongLiteral
+                    child: BlocBuilder<SendMessageCubit, SendMessageState>(
+                      builder: (_, sendMessageState) => InkWell(
+                        onTap: switch (sendMessageState) {
+                          SendingMessageState() => null,
+                          _ => () =>
+                              context.read<SendMessageCubit>().sendMessage(
+                                    switch (index) {
+                                      zero => option1LongLiteral,
+                                      one
+                                          when context
+                                                  .read<UserCubit>()
+                                                  .state
+                                                  .user !=
+                                              null =>
+                                        option2FirstPartLongLiteral +
+                                            whiteSpace +
+                                            relatedToLiteral +
+                                            whiteSpace +
+                                            context
+                                                .read<UserCubit>()
+                                                .state
+                                                .user!
+                                                .courseOfStudy +
+                                            whiteSpace +
+                                            option2SecondPartLongLiteral,
+                                      one
+                                          when context
+                                                  .read<UserCubit>()
+                                                  .state
+                                                  .user ==
+                                              null =>
+                                        option2FirstPartLongLiteral +
+                                            whiteSpace +
+                                            option2SecondPartLongLiteral,
+                                      _ => option3LongLiteral
+                                    },
+                                  ),
+                        },
+                        borderRadius: BorderRadius.circular(
+                          spacing,
+                        ),
+                        child: Container(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: spacing,
+                            vertical: smallSpacing,
+                          ),
+                          decoration: BoxDecoration(
+                            color: switch (sendMessageState) {
+                              SendingMessageState() => disabledColor,
+                              _ => Theme.of(context).colorScheme.primary,
                             },
-                          ),
-                      borderRadius: BorderRadius.circular(
-                        spacing,
-                      ),
-                      child: Container(
-                        padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: spacing,
-                          vertical: smallSpacing,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadiusDirectional.circular(
-                            spacing,
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(
-                                chatScreenBottomLayoutOptionsDx,
-                                chatScreenBottomLayoutOptionsDy,
-                              ),
-                              color: chatScreenBottomLayoutOptionsShadowColor,
+                            borderRadius: BorderRadiusDirectional.circular(
+                              spacing,
                             ),
-                          ],
-                        ),
-                        child: Text(
-                          switch (index) {
-                            zero => option1ShortLiteral,
-                            one => option2ShortLiteral,
-                            _ => option3ShortLiteral
-                          },
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor,
+                            boxShadow: const [
+                              BoxShadow(
+                                offset: Offset(
+                                  chatScreenBottomLayoutOptionsDx,
+                                  chatScreenBottomLayoutOptionsDy,
+                                ),
+                                color: chatScreenBottomLayoutOptionsShadowColor,
                               ),
+                            ],
+                          ),
+                          child: Text(
+                            switch (index) {
+                              zero => option1ShortLiteral,
+                              one => option2ShortLiteral,
+                              _ => option3ShortLiteral
+                            },
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                ),
+                          ),
                         ),
                       ),
                     ),
