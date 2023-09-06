@@ -7,6 +7,7 @@ import 'package:vsss/models/failure.dart';
 import 'package:vsss/resources/numbers.dart';
 import 'package:vsss/resources/strings.dart';
 import 'package:vsss/services/chat_service.dart';
+import 'package:vsss/utils/helpers/time_util.dart';
 
 abstract interface class ChatRepository {
   Future<Either<Failure, List<Chat>>> get chats;
@@ -43,9 +44,13 @@ final class ChatRepositoryImplementation implements ChatRepository {
           ) ??
           true) {
         final initialChat = Chat(
-          message: helloLiteral + initialMessage,
-          timestamp: DateTime.now().millisecondsSinceEpoch,
-          isReply: false,
+          message: helloLiteral +
+              whiteSpace +
+              waveEmoji +
+              whiteSpace +
+              initialMessage,
+          timestamp: TimeUtil.currentDateTimeMilliseconds,
+          isReply: true,
           failed: false,
         );
         await _chatOpsService.add(
@@ -81,7 +86,7 @@ final class ChatRepositoryImplementation implements ChatRepository {
     await _chatOpsService.open(
       chatsBox,
     );
-    final nowMilliseconds = DateTime.now().millisecondsSinceEpoch;
+    final nowMilliseconds = TimeUtil.currentDateTimeMilliseconds;
     final chat = Chat(
       message: message,
       timestamp: nowMilliseconds,
@@ -106,7 +111,7 @@ final class ChatRepositoryImplementation implements ChatRepository {
       );
       final chat = Chat(
         message: response.message,
-        timestamp: response.timestamp ?? DateTime.now().millisecondsSinceEpoch,
+        timestamp: response.timestamp ?? TimeUtil.currentDateTimeMilliseconds,
         isReply: response.isReply ?? true,
         failed: false,
       );

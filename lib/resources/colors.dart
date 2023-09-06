@@ -5,3 +5,4 @@ import 'package:flutter/material.dart';
 const baseColor = Color(
   0xFF6B4FF1,
 );
+const chatScreenBottomLayoutOptionsShadowColor = Colors.black26;

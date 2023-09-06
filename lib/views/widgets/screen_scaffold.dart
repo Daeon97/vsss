@@ -8,7 +8,8 @@ class ScreenScaffold extends StatelessWidget {
     required Widget child,
     bool useScaffold = true,
     bool useSafeArea = true,
-    bool centerScrollViewVertically = true,
+    bool useScrollView = true,
+    bool centerViewVertically = true,
     EdgeInsetsGeometry? edgeInsetsGeometry,
     FloatingActionButton? floatingActionButton,
     String? title,
@@ -16,7 +17,8 @@ class ScreenScaffold extends StatelessWidget {
   })  : _child = child,
         _useScaffold = useScaffold,
         _useSafeArea = useSafeArea,
-        _centerScrollViewVertically = centerScrollViewVertically,
+        _useScrollView = useScrollView,
+        _centerViewVertically = centerViewVertically,
         _edgeInsetsGeometry = edgeInsetsGeometry,
         _floatingActionButton = floatingActionButton,
         _title = title;
@@ -24,7 +26,8 @@ class ScreenScaffold extends StatelessWidget {
   final Widget _child;
   final bool _useScaffold;
   final bool _useSafeArea;
-  final bool _centerScrollViewVertically;
+  final bool _useScrollView;
+  final bool _centerViewVertically;
   final EdgeInsetsGeometry? _edgeInsetsGeometry;
   final FloatingActionButton? _floatingActionButton;
   final String? _title;
@@ -60,14 +63,21 @@ class ScreenScaffold extends StatelessWidget {
         false => _body2
       };
 
-  Widget get _body2 => switch (_centerScrollViewVertically) {
+  Widget get _body2 => switch (_centerViewVertically) {
         true => Center(
             child: _body3,
           ),
         false => _body3
       };
 
-  Widget get _body3 => SingleChildScrollView(
+  Widget get _body3 => switch (_useScrollView) {
+        true => SingleChildScrollView(
+            child: _body4,
+          ),
+        false => _body4
+      };
+
+  Widget get _body4 => Padding(
         padding: _edgeInsetsGeometry ??
             const EdgeInsetsDirectional.symmetric(
               vertical: largeSpacing,

@@ -76,7 +76,7 @@ final class HiveDatabaseClient<T> implements DatabaseClient<BoxEvent, T> {
     required String key,
     required T defaultValue,
   }) =>
-      Hive.box<T?>(
+      Hive.box<T>(
         boxName,
       ).get(
         key,
@@ -89,7 +89,7 @@ final class HiveDatabaseClient<T> implements DatabaseClient<BoxEvent, T> {
     required String key,
     required T value,
   }) =>
-      Hive.box<T?>(boxName).put(
+      Hive.box<T>(boxName).put(
         key,
         value,
       );

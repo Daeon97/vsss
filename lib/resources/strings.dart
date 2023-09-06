@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs
+// ignore_for_file: public_member_api_docs, lines_longer_than_80_chars
 
 // Routes
 const defaultScreenRoute = '/';
@@ -21,6 +21,7 @@ const baseUrl = 'https://hook.eu1.make.com';
 
 // .env key names
 const chatPath = 'CHAT_PATH';
+const authorizationToken = 'AUTHORIZATION_TOKEN';
 
 // Asset paths
 const _assetsPath = 'assets';
@@ -45,17 +46,17 @@ const chatLiteral = 'Chat';
 const couldNotGetChatsLiteral = 'Could not get chats';
 const couldNotSendMessageLiteral = 'Could not send message';
 const initialMessage =
-    'Welcome to the virtual support service. How may we help you today';
+    'Welcome to the StudentEase chat section. How may we help you today';
+const relatedToLiteral = 'related to';
 
 // Options
-// ignore: lines_longer_than_80_chars
 const option1LongLiteral =
     'Can you provide guidance on how to balance my academic workload with extracurricular activities and part-time job opportunities';
 const option1ShortLiteral = 'Academic workload balance';
 const option2FirstPartLongLiteral =
-    'Are there any research or internship opportunities related to ';
+    'Are there any research or internship opportunities';
 const option2SecondPartLongLiteral =
-    ' that you recommend I pursue to gain practical experience';
+    'that you recommend I pursue to gain practical experience';
 const option2ShortLiteral = 'Research or internship';
 const option3LongLiteral =
     'How can I improve my study habits and time management skills to perform better academically';
@@ -66,6 +67,7 @@ const emptyString = '';
 const whiteSpace = ' ';
 const comma = ',';
 const fullStop = '.';
+const waveEmoji = '👋';
 
 // Regex
 const nameSplitRegexPattern = r'\s';

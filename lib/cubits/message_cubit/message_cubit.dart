@@ -20,6 +20,9 @@ class MessageCubit extends Cubit<MessageState> {
   Future<void> sendMessage(
     String message,
   ) async {
+    emit(
+      const SendingMessageState(),
+    );
     final result = await _chatsRepository.sendMessage(
       message,
     );
