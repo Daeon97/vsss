@@ -18,21 +18,24 @@ class ChatAdapter extends TypeAdapter<Chat> {
     };
     return Chat(
       message: fields[0] as String,
-      timestamp: fields[1] as int,
-      options: (fields[2] as List?)?.cast<String>(),
+      timestamp: fields[1] as int?,
+      isReply: fields[2] as bool?,
+      failed: fields[3] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Chat obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.message)
       ..writeByte(1)
       ..write(obj.timestamp)
       ..writeByte(2)
-      ..write(obj.options);
+      ..write(obj.isReply)
+      ..writeByte(3)
+      ..write(obj.failed);
   }
 
   @override
@@ -52,13 +55,14 @@ class ChatAdapter extends TypeAdapter<Chat> {
 
 Chat _$ChatFromJson(Map<String, dynamic> json) => Chat(
       message: json['message'] as String,
-      timestamp: json['timestamp'] as int,
-      options:
-          (json['options'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      timestamp: json['timestamp'] as int?,
+      isReply: json['isReply'] as bool?,
+      failed: json['failed'] as bool?,
     );
 
 Map<String, dynamic> _$ChatToJson(Chat instance) => <String, dynamic>{
       'message': instance.message,
       'timestamp': instance.timestamp,
-      'options': instance.options,
+      'isReply': instance.isReply,
+      'failed': instance.failed,
     };

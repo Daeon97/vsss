@@ -42,7 +42,7 @@ abstract interface class DatabaseClient<E, T> {
   );
 }
 
-final class HiveDatabase<T> implements DatabaseClient<BoxEvent, T> {
+final class HiveDatabaseClient<T> implements DatabaseClient<BoxEvent, T> {
   @override
   Future<void> open(
     String boxName,

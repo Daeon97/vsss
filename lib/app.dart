@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:vsss/cubits/chat_cubit/chat_cubit.dart';
+import 'package:vsss/cubits/chats_cubit/chats_cubit.dart';
+import 'package:vsss/cubits/message_cubit/message_cubit.dart';
 import 'package:vsss/cubits/onboarding_cubit/onboarding_cubit.dart';
 import 'package:vsss/cubits/user_cubit/user_cubit.dart';
 import 'package:vsss/injection_container.dart';
@@ -36,7 +37,10 @@ class App extends StatelessWidget {
         BlocProvider<UserCubit>(
           create: (_) => sl(),
         ),
-        BlocProvider<ChatCubit>(
+        BlocProvider<ChatsCubit>(
+          create: (_) => sl(),
+        ),
+        BlocProvider<MessageCubit>(
           create: (_) => sl(),
         ),
       ];

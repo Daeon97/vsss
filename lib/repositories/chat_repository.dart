@@ -4,13 +4,14 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:vsss/models/chat.dart';
 import 'package:vsss/models/failure.dart';
+import 'package:vsss/resources/numbers.dart';
 import 'package:vsss/resources/strings.dart';
 import 'package:vsss/services/chat_service.dart';
 
 abstract interface class ChatRepository {
   Future<Either<Failure, List<Chat>>> get chats;
 
-  Future<Either<Failure, Chat>> sendMessage(
+  Future<Either<Failure, bool>> sendMessage(
     String message,
   );
 }
@@ -31,7 +32,6 @@ final class ChatRepositoryImplementation implements ChatRepository {
       await _chatOpsService.open(
         chatsBox,
       );
-
       await _chatUtilsService.open(
         chatsUtilsBox,
       );
@@ -45,11 +45,8 @@ final class ChatRepositoryImplementation implements ChatRepository {
         final initialChat = Chat(
           message: helloLiteral + initialMessage,
           timestamp: DateTime.now().millisecondsSinceEpoch,
-          options: [
-            option1ShortLiteral,
-            option2ShortLiteral,
-            option3ShortLiteral,
-          ],
+          isReply: false,
+          failed: false,
         );
         await _chatOpsService.add(
           boxName: chatsBox,
@@ -78,21 +75,66 @@ final class ChatRepositoryImplementation implements ChatRepository {
   }
 
   @override
-  Future<Either<Failure, Chat>> sendMessage(
+  Future<Either<Failure, bool>> sendMessage(
     String message,
   ) async {
+    await _chatOpsService.open(
+      chatsBox,
+    );
+    final nowMilliseconds = DateTime.now().millisecondsSinceEpoch;
+    final chat = Chat(
+      message: message,
+      timestamp: nowMilliseconds,
+      isReply: false,
+      failed: false,
+    );
+    await _chatOpsService.add(
+      boxName: chatsBox,
+      chat: chat,
+    );
+
     try {
       final result = await _chatOpsService.sendMessage(
-        message: message,
         path: dotenv.env[chatPath]!,
+        queryParameters: <String, String>{
+          messageKey: message,
+        },
       );
       final json = result.data as Map<String, dynamic>;
-      return const Left(
-        Failure(
-          couldNotSendMessageLiteral,
-        ),
+      final response = Chat.fromJson(
+        json,
+      );
+      final chat = Chat(
+        message: response.message,
+        timestamp: response.timestamp ?? DateTime.now().millisecondsSinceEpoch,
+        isReply: response.isReply ?? true,
+        failed: false,
+      );
+      await _chatOpsService.add(
+        boxName: chatsBox,
+        chat: chat,
+      );
+      return const Right(
+        true,
       );
     } catch (_) {
+      final chats = _chatOpsService.getAllChats(
+        chatsBox,
+      );
+      await _chatOpsService.deleteAt(
+        boxName: chatsBox,
+        index: chats.length - one,
+      );
+      final chat = Chat(
+        message: message,
+        timestamp: nowMilliseconds,
+        isReply: false,
+        failed: true,
+      );
+      await _chatOpsService.add(
+        boxName: chatsBox,
+        chat: chat,
+      );
       return const Left(
         Failure(
           couldNotSendMessageLiteral,

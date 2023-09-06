@@ -1,26 +1,26 @@
 // ignore_for_file: public_member_api_docs
 
-part of 'chat_cubit.dart';
+part of 'chats_cubit.dart';
 
-abstract final class ChatState extends Equatable {
-  const ChatState();
+abstract final class ChatsState extends Equatable {
+  const ChatsState();
 }
 
-final class ChatInitialState extends ChatState {
-  const ChatInitialState();
+final class ChatsInitialState extends ChatsState {
+  const ChatsInitialState();
 
   @override
   List<Object?> get props => [];
 }
 
-final class LoadingChatsState extends ChatState {
+final class LoadingChatsState extends ChatsState {
   const LoadingChatsState();
 
   @override
   List<Object?> get props => [];
 }
 
-final class LoadedChatsState extends ChatState {
+final class LoadedChatsState extends ChatsState {
   const LoadedChatsState(
     this.chats,
   );
@@ -33,7 +33,7 @@ final class LoadedChatsState extends ChatState {
       ];
 }
 
-final class FailedToLoadChatsState extends ChatState {
+final class FailedToLoadChatsState extends ChatsState {
   const FailedToLoadChatsState(
     this.failure,
   );

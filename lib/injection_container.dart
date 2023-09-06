@@ -2,7 +2,8 @@
 
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
-import 'package:vsss/cubits/chat_cubit/chat_cubit.dart';
+import 'package:vsss/cubits/chats_cubit/chats_cubit.dart';
+import 'package:vsss/cubits/message_cubit/message_cubit.dart';
 import 'package:vsss/cubits/onboarding_cubit/onboarding_cubit.dart';
 import 'package:vsss/cubits/user_cubit/user_cubit.dart';
 import 'package:vsss/models/chat.dart';
@@ -23,7 +24,12 @@ void registerServices() {
       UserCubit.new,
     )
     ..registerFactory(
-      () => ChatCubit(
+      () => ChatsCubit(
+        sl(),
+      ),
+    )
+    ..registerFactory(
+      () => MessageCubit(
         sl(),
       ),
     )
@@ -54,9 +60,9 @@ void registerServices() {
       HttpClient.new,
     )
     ..registerLazySingleton<DatabaseClient<BoxEvent, Chat>>(
-      HiveDatabase.new,
+      HiveDatabaseClient.new,
     )
     ..registerLazySingleton<DatabaseClient<BoxEvent, bool>>(
-      HiveDatabase.new,
+      HiveDatabaseClient.new,
     );
 }

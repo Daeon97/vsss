@@ -29,13 +29,23 @@ final class HttpClient {
 
   final Dio _dio;
 
+  Map<String, String> get _defaultHeaders => <String, String>{
+        contentTypeKey: contentTypeValue,
+        acceptKey: acceptValue,
+      };
+
   // ignore: strict_raw_type
   Future<Response> request({
     required RequestMethod requestMethod,
     required String path,
+    String? token,
     Map<String, dynamic>? data,
     Map<String, dynamic>? queryParameters,
   }) {
+    if (token != null) {
+      _authToken = token;
+    }
+
     switch (requestMethod) {
       case RequestMethod.get:
         return _dio.get(
@@ -57,4 +67,13 @@ final class HttpClient {
         );
     }
   }
+
+  // ignore: avoid_setters_without_getters
+  set _authToken(
+    String bearerToken,
+  ) =>
+      _dio.options.headers = <String, dynamic>{
+        ..._defaultHeaders,
+        authorizationKey: '$bearerValue $bearerToken',
+      };
 }

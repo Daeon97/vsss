@@ -11,8 +11,9 @@ part 'chat.g.dart';
 final class Chat extends HiveObject {
   Chat({
     required this.message,
-    required this.timestamp,
-    this.options,
+    this.timestamp,
+    this.isReply,
+    this.failed,
   });
 
   factory Chat.fromJson(
@@ -25,12 +26,14 @@ final class Chat extends HiveObject {
   @HiveField(zero)
   final String message;
 
-  @JsonKey(required: false)
   @HiveField(one)
-  final int timestamp;
+  final int? timestamp;
 
   @HiveField(two)
-  final List<String>? options;
+  final bool? isReply;
+
+  @HiveField(three)
+  final bool? failed;
 
   Map<String, dynamic> toJson() => _$ChatToJson(
         this,

@@ -14,6 +14,7 @@ const acceptKey = 'Accept';
 const acceptValue = '*/*';
 const authorizationKey = 'Authorization';
 const bearerValue = 'Bearer';
+const messageKey = 'message';
 
 // Endpoint
 const baseUrl = 'https://hook.eu1.make.com';

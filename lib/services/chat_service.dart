@@ -34,8 +34,8 @@ abstract interface class ChatOpsService extends _ChatService {
 
   // ignore: strict_raw_type
   Future<Response> sendMessage({
-    required String message,
     required String path,
+    required Map<String, dynamic> queryParameters,
   });
 }
 
@@ -158,11 +158,12 @@ final class ChatOpsServiceImplementation implements ChatOpsService {
   @override
   // ignore: strict_raw_type
   Future<Response> sendMessage({
-    required String message,
     required String path,
+    required Map<String, dynamic> queryParameters,
   }) =>
       _httpClient.request(
         requestMethod: RequestMethod.post,
         path: path,
+        queryParameters: queryParameters,
       );
 }
