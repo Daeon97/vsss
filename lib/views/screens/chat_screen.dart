@@ -31,48 +31,52 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
+  void deactivate() {
+    context.read<ChatsCubit>().closeDatabase();
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _chatsListViewScrollController.dispose();
+    super.dispose();
+  }
+
+  void _getChats() => context.read<ChatsCubit>().chats;
+
+  void _scrollToEnd() => _chatsListViewScrollController.animateTo(
+        _chatsListViewScrollController.position.maxScrollExtent,
+        duration: const Duration(
+          milliseconds: chatsListViewScrollAnimationDuration,
+        ),
+        curve: Curves.easeIn,
+      );
+
+  @override
   Widget build(BuildContext context) => MultiBlocListener(
         listeners: [
           BlocListener<SendMessageCubit, SendMessageState>(
             listener: (_, sendMessageState) {
               if (sendMessageState is FailedToSendMessageState ||
                   sendMessageState is SentMessageState) {
-                context.read<ChatsCubit>().chats;
-                _chatsListViewScrollController.animateTo(
-                  _chatsListViewScrollController.position.maxScrollExtent,
-                  duration: const Duration(
-                    milliseconds: chatsListViewScrollAnimationDuration,
-                  ),
-                  curve: Curves.easeIn,
-                );
+                _getChats();
+                // _scrollToEnd();
               }
             },
           ),
           BlocListener<DeleteChatCubit, DeleteChatState>(
             listener: (_, deleteChatState) {
               if (deleteChatState is DeletedChatState) {
-                context.read<ChatsCubit>().chats;
-                _chatsListViewScrollController.animateTo(
-                  _chatsListViewScrollController.position.maxScrollExtent,
-                  duration: const Duration(
-                    milliseconds: chatsListViewScrollAnimationDuration,
-                  ),
-                  curve: Curves.easeIn,
-                );
+                _getChats();
+                // _scrollToEnd();
               }
             },
           ),
           BlocListener<CacheMessageCubit, CacheMessageState>(
             listener: (_, cacheMessageState) {
               if (cacheMessageState is CachedMessageState) {
-                context.read<ChatsCubit>().chats;
-                _chatsListViewScrollController.animateTo(
-                  _chatsListViewScrollController.position.maxScrollExtent,
-                  duration: const Duration(
-                    milliseconds: chatsListViewScrollAnimationDuration,
-                  ),
-                  curve: Curves.easeIn,
-                );
+                _getChats();
+                // _scrollToEnd();
                 context.read<SendMessageCubit>().sendMessage(
                       cacheMessageState.message,
                     );
@@ -101,8 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         itemBuilder: (_, index) => Padding(
                           padding: EdgeInsetsDirectional.only(
                             top: index == zero ? spacing : nil,
-                            bottom:
-                                index == chatsList.length - one ? nil : spacing,
+                            bottom: spacing,
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,12 +299,16 @@ class _ChatScreenState extends State<ChatScreen> {
                       },
                       bottom: chatScreenBottomLayoutOptionsDy,
                     ),
-                    child: BlocBuilder<SendMessageCubit, SendMessageState>(
-                      builder: (_, sendMessageState) => InkWell(
-                        onTap: switch (sendMessageState) {
-                          SendingMessageState() => null,
-                          _ => () =>
-                              context.read<SendMessageCubit>().sendMessage(
+                    child: BlocBuilder<CacheMessageCubit, CacheMessageState>(
+                      builder: (_, cacheMessageState) =>
+                          BlocBuilder<SendMessageCubit, SendMessageState>(
+                        builder: (_, sendMessageState) => InkWell(
+                          onTap: cacheMessageState is CachingMessageState ||
+                                  sendMessageState is SendingMessageState
+                              ? null
+                              : () => context
+                                  .read<CacheMessageCubit>()
+                                  .cacheMessage(
                                     switch (index) {
                                       zero => option1LongLiteral,
                                       one
@@ -333,46 +340,47 @@ class _ChatScreenState extends State<ChatScreen> {
                                       _ => option3LongLiteral
                                     },
                                   ),
-                        },
-                        borderRadius: BorderRadius.circular(
-                          spacing,
-                        ),
-                        child: Container(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                            horizontal: spacing,
-                            vertical: smallSpacing,
+                          borderRadius: BorderRadius.circular(
+                            spacing,
                           ),
-                          decoration: BoxDecoration(
-                            color: switch (sendMessageState) {
-                              SendingMessageState() => disabledColor,
-                              _ => Theme.of(context).colorScheme.primary,
-                            },
-                            borderRadius: BorderRadiusDirectional.circular(
-                              spacing,
+                          child: Container(
+                            padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: spacing,
+                              vertical: smallSpacing,
                             ),
-                            boxShadow: const [
-                              BoxShadow(
-                                offset: Offset(
-                                  chatScreenBottomLayoutOptionsDx,
-                                  chatScreenBottomLayoutOptionsDy,
-                                ),
-                                color: chatScreenBottomLayoutOptionsShadowColor,
+                            decoration: BoxDecoration(
+                              color: cacheMessageState is CachingMessageState ||
+                                      sendMessageState is SendingMessageState
+                                  ? disabledColor
+                                  : Theme.of(context).colorScheme.primary,
+                              borderRadius: BorderRadiusDirectional.circular(
+                                spacing,
                               ),
-                            ],
-                          ),
-                          child: Text(
-                            switch (index) {
-                              zero => option1ShortLiteral,
-                              one => option2ShortLiteral,
-                              _ => option3ShortLiteral
-                            },
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
+                              boxShadow: const [
+                                BoxShadow(
+                                  offset: Offset(
+                                    chatScreenBottomLayoutOptionsDx,
+                                    chatScreenBottomLayoutOptionsDy,
+                                  ),
                                   color:
-                                      Theme.of(context).scaffoldBackgroundColor,
+                                      chatScreenBottomLayoutOptionsShadowColor,
                                 ),
+                              ],
+                            ),
+                            child: Text(
+                              switch (index) {
+                                zero => option1ShortLiteral,
+                                one => option2ShortLiteral,
+                                _ => option3ShortLiteral
+                              },
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor,
+                                  ),
+                            ),
                           ),
                         ),
                       ),

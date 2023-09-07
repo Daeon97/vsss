@@ -9,13 +9,13 @@ part 'cache_message_state.dart';
 
 class CacheMessageCubit extends Cubit<CacheMessageState> {
   CacheMessageCubit(
-    ChatRepository chatsRepository,
-  )   : _chatsRepository = chatsRepository,
+    ChatRepository chatRepository,
+  )   : _chatRepository = chatRepository,
         super(
           const CacheMessageInitialState(),
         );
 
-  final ChatRepository _chatsRepository;
+  final ChatRepository _chatRepository;
 
   Future<void> cacheMessage(
     String message,
@@ -23,7 +23,7 @@ class CacheMessageCubit extends Cubit<CacheMessageState> {
     emit(
       const CachingMessageState(),
     );
-    final result = await _chatsRepository.cacheMessage(
+    final result = await _chatRepository.cacheMessage(
       message,
     );
     emit(

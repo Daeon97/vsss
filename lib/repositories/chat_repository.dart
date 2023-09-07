@@ -2,9 +2,9 @@
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:vsss/models/message.dart';
 import 'package:vsss/models/chat.dart';
 import 'package:vsss/models/failure.dart';
+import 'package:vsss/models/message.dart';
 import 'package:vsss/resources/numbers.dart';
 import 'package:vsss/resources/strings.dart';
 import 'package:vsss/services/chat_service.dart';
@@ -24,6 +24,8 @@ abstract interface class ChatRepository {
   Future<void> deleteChatAt(
     int index,
   );
+
+  Future<void> closeDatabase();
 }
 
 final class ChatRepositoryImplementation implements ChatRepository {
@@ -166,7 +168,7 @@ final class ChatRepositoryImplementation implements ChatRepository {
       );
       await _chatOpsService.deleteAt(
         boxName: chatsBox,
-        index: chats.length - two,
+        index: chats.length - one,
       );
       final chat = Chat(
         message: message.text,
@@ -196,6 +198,16 @@ final class ChatRepositoryImplementation implements ChatRepository {
     await _chatOpsService.deleteAt(
       boxName: chatsBox,
       index: index,
+    );
+  }
+
+  @override
+  Future<void> closeDatabase() async {
+    await _chatOpsService.close(
+      chatsBox,
+    );
+    await _chatUtilsService.close(
+      chatsUtilsBox,
     );
   }
 }

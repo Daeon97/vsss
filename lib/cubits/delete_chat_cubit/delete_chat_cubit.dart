@@ -8,13 +8,13 @@ part 'delete_chat_state.dart';
 
 class DeleteChatCubit extends Cubit<DeleteChatState> {
   DeleteChatCubit(
-    ChatRepository chatsRepository,
-  )   : _chatsRepository = chatsRepository,
+    ChatRepository chatRepository,
+  )   : _chatRepository = chatRepository,
         super(
           const DeleteChatInitialState(),
         );
 
-  final ChatRepository _chatsRepository;
+  final ChatRepository _chatRepository;
 
   Future<void> deleteChatAt(
     int index,
@@ -22,7 +22,7 @@ class DeleteChatCubit extends Cubit<DeleteChatState> {
     emit(
       const DeletingChatState(),
     );
-    await _chatsRepository.deleteChatAt(
+    await _chatRepository.deleteChatAt(
       index,
     );
     emit(

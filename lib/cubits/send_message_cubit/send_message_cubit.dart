@@ -10,13 +10,13 @@ part 'send_message_state.dart';
 
 class SendMessageCubit extends Cubit<SendMessageState> {
   SendMessageCubit(
-    ChatRepository chatsRepository,
-  )   : _chatsRepository = chatsRepository,
+    ChatRepository chatRepository,
+  )   : _chatRepository = chatRepository,
         super(
           const SendMessageInitialState(),
         );
 
-  final ChatRepository _chatsRepository;
+  final ChatRepository _chatRepository;
 
   Future<void> sendMessage(
     Message message,
@@ -24,7 +24,7 @@ class SendMessageCubit extends Cubit<SendMessageState> {
     emit(
       const SendingMessageState(),
     );
-    final result = await _chatsRepository.sendMessage(
+    final result = await _chatRepository.sendMessage(
       message,
     );
     result.fold(

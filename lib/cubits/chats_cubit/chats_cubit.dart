@@ -10,23 +10,23 @@ part 'chats_state.dart';
 
 class ChatsCubit extends Cubit<ChatsState> {
   ChatsCubit(
-    ChatRepository chatsRepository,
-  )   : _chatsRepository = chatsRepository,
+    ChatRepository chatRepository,
+  )   : _chatRepository = chatRepository,
         super(
           const ChatsInitialState(),
         );
 
-  final ChatRepository _chatsRepository;
+  final ChatRepository _chatRepository;
 
   Future<void> get chats async {
-    final result = await _chatsRepository.chats;
+    final result = await _chatRepository.chats;
     result.fold(
       _failure,
       _chats,
     );
   }
 
-
+  Future<void> closeDatabase() => _chatRepository.closeDatabase();
 
   void _failure(
     Failure failure,
