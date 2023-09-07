@@ -6,10 +6,16 @@ import 'package:vsss/resources/strings.dart';
 import 'package:vsss/utils/enums.dart';
 
 final class HttpClient {
-  factory HttpClient() => HttpClient._();
+  factory HttpClient(
+    String baseUrl,
+  ) =>
+      HttpClient._(
+        baseUrl,
+      );
 
-  HttpClient._()
-      : _dio = Dio()
+  HttpClient._(
+    String baseUrl,
+  ) : _dio = Dio()
           ..options = BaseOptions(
             baseUrl: baseUrl,
             connectTimeout: const Duration(

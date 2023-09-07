@@ -10,14 +10,14 @@ final class SendMessageInitialState extends SendMessageState {
   const SendMessageInitialState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class SendingMessageState extends SendMessageState {
   const SendingMessageState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class SentMessageState extends SendMessageState {
@@ -28,7 +28,7 @@ final class SentMessageState extends SendMessageState {
   final bool result;
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         result,
       ];
 }
@@ -41,7 +41,7 @@ final class FailedToSendMessageState extends SendMessageState {
   final Failure failure;
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         failure,
       ];
 }

@@ -19,9 +19,6 @@ class DeleteChatCubit extends Cubit<DeleteChatState> {
   Future<void> deleteChatAt(
     int index,
   ) async {
-    emit(
-      const DeletingChatState(),
-    );
     await _chatRepository.deleteChatAt(
       index,
     );

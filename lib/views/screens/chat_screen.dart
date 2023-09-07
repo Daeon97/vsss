@@ -299,16 +299,12 @@ class _ChatScreenState extends State<ChatScreen> {
                       },
                       bottom: chatScreenBottomLayoutOptionsDy,
                     ),
-                    child: BlocBuilder<CacheMessageCubit, CacheMessageState>(
-                      builder: (_, cacheMessageState) =>
-                          BlocBuilder<SendMessageCubit, SendMessageState>(
-                        builder: (_, sendMessageState) => InkWell(
-                          onTap: cacheMessageState is CachingMessageState ||
-                                  sendMessageState is SendingMessageState
-                              ? null
-                              : () => context
-                                  .read<CacheMessageCubit>()
-                                  .cacheMessage(
+                    child: BlocBuilder<SendMessageCubit, SendMessageState>(
+                      builder: (_, sendMessageState) => InkWell(
+                        onTap: switch (sendMessageState) {
+                          SendingMessageState() => null,
+                          _ => () =>
+                              context.read<CacheMessageCubit>().cacheMessage(
                                     switch (index) {
                                       zero => option1LongLiteral,
                                       one
@@ -339,48 +335,47 @@ class _ChatScreenState extends State<ChatScreen> {
                                             option2SecondPartLongLiteral,
                                       _ => option3LongLiteral
                                     },
-                                  ),
-                          borderRadius: BorderRadius.circular(
-                            spacing,
+                                  )
+                        },
+                        borderRadius: BorderRadius.circular(
+                          spacing,
+                        ),
+                        child: Container(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: spacing,
+                            vertical: smallSpacing,
                           ),
-                          child: Container(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: spacing,
-                              vertical: smallSpacing,
+                          decoration: BoxDecoration(
+                            color: switch (sendMessageState) {
+                              SendingMessageState() => disabledColor,
+                              _ => Theme.of(context).colorScheme.primary
+                            },
+                            borderRadius: BorderRadiusDirectional.circular(
+                              spacing,
                             ),
-                            decoration: BoxDecoration(
-                              color: cacheMessageState is CachingMessageState ||
-                                      sendMessageState is SendingMessageState
-                                  ? disabledColor
-                                  : Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadiusDirectional.circular(
-                                spacing,
-                              ),
-                              boxShadow: const [
-                                BoxShadow(
-                                  offset: Offset(
-                                    chatScreenBottomLayoutOptionsDx,
-                                    chatScreenBottomLayoutOptionsDy,
-                                  ),
-                                  color:
-                                      chatScreenBottomLayoutOptionsShadowColor,
+                            boxShadow: const [
+                              BoxShadow(
+                                offset: Offset(
+                                  chatScreenBottomLayoutOptionsDx,
+                                  chatScreenBottomLayoutOptionsDy,
                                 ),
-                              ],
-                            ),
-                            child: Text(
-                              switch (index) {
-                                zero => option1ShortLiteral,
-                                one => option2ShortLiteral,
-                                _ => option3ShortLiteral
-                              },
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .scaffoldBackgroundColor,
-                                  ),
-                            ),
+                                color: chatScreenBottomLayoutOptionsShadowColor,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            switch (index) {
+                              zero => option1ShortLiteral,
+                              one => option2ShortLiteral,
+                              _ => option3ShortLiteral
+                            },
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                ),
                           ),
                         ),
                       ),

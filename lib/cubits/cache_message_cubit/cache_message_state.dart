@@ -10,14 +10,7 @@ final class CacheMessageInitialState extends CacheMessageState {
   const CacheMessageInitialState();
 
   @override
-  List<Object> get props => [];
-}
-
-final class CachingMessageState extends CacheMessageState {
-  const CachingMessageState();
-
-  @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class CachedMessageState extends CacheMessageState {
@@ -28,7 +21,7 @@ final class CachedMessageState extends CacheMessageState {
   final Message message;
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         message,
       ];
 }

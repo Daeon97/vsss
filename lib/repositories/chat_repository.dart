@@ -141,22 +141,22 @@ final class ChatRepositoryImplementation implements ChatRepository {
       final json = {
         messageKey: result.data as String,
       };
-      final response = Chat.fromJson(
+      final chat = Chat.fromJson(
         json,
       );
       await _chatOpsService.deleteAt(
         boxName: chatsBox,
         index: chats.length - one,
       );
-      final chat = Chat(
-        message: response.message,
-        timestamp: response.timestamp ?? TimeUtil.currentDateTimeMilliseconds,
-        isReply: response.isReply ?? true,
+      final reply = Chat(
+        message: chat.message,
+        timestamp: chat.timestamp ?? TimeUtil.currentDateTimeMilliseconds,
+        isReply: chat.isReply ?? true,
         failed: false,
       );
       await _chatOpsService.add(
         boxName: chatsBox,
-        chat: chat,
+        chat: reply,
       );
       return const Right(
         true,

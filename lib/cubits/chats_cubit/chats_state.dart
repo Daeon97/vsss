@@ -13,13 +13,6 @@ final class ChatsInitialState extends ChatsState {
   List<Object?> get props => [];
 }
 
-final class LoadingChatsState extends ChatsState {
-  const LoadingChatsState();
-
-  @override
-  List<Object?> get props => [];
-}
-
 final class LoadedChatsState extends ChatsState {
   const LoadedChatsState(
     this.chats,

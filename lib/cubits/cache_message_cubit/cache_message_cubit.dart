@@ -20,9 +20,6 @@ class CacheMessageCubit extends Cubit<CacheMessageState> {
   Future<void> cacheMessage(
     String message,
   ) async {
-    emit(
-      const CachingMessageState(),
-    );
     final result = await _chatRepository.cacheMessage(
       message,
     );

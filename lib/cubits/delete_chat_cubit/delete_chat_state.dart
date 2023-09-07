@@ -10,19 +10,12 @@ final class DeleteChatInitialState extends DeleteChatState {
   const DeleteChatInitialState();
 
   @override
-  List<Object> get props => [];
-}
-
-final class DeletingChatState extends DeleteChatState {
-  const DeletingChatState();
-
-  @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class DeletedChatState extends DeleteChatState {
   const DeletedChatState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }

@@ -15,21 +15,36 @@ const acceptValue = '*/*';
 const authorizationKey = 'Authorization';
 const bearerValue = 'Bearer';
 const messageKey = 'message';
+const defaultKey = 'default';
+const partKey = 'part';
+const snippetValue = 'snippet';
+const qKey = 'q';
+const maxResultsKey = 'maxResults';
+const keyKey = 'key';
 
-// Endpoint
-const baseUrl = 'https://hook.eu1.make.com';
+// Endpoints
+const chatBaseUrl = 'https://hook.eu1.make.com';
+const courseRecommendationBaseUrl = 'https://youtube.googleapis.com/youtube/v3';
+
 // Paths
-// const pathSlash = '/';
+const searchPath = '/search';
+
+// Instance names
+const chatBaseUrlInstanceName = 'chatBaseUrl';
+const courseRecommendationBaseUrlInstanceName = 'courseRecommendationBaseUrl';
+const forChatsInstanceName = 'forChats';
+const forCourseRecommendationsInstanceName = 'forCourseRecommendations';
 
 // .env key names
 const chatPath = 'CHAT_PATH';
-const authorizationToken = 'AUTHORIZATION_TOKEN';
+const youtubeDataApiKey = 'YOUTUBE_DATA_API_KEY';
 
 // Asset paths
 const _assetsPath = 'assets';
 const helloIllustrationPath = '$_assetsPath/hello_illustration.png';
 const robotPath = '$_assetsPath/robot.png';
 const welcomeIllustrationPath = '$_assetsPath/welcome_illustration.png';
+const serverDownIllustrationPath = '$_assetsPath/server_down_illustration.png';
 
 // UI literals
 const helloLiteral = 'Hello';
@@ -52,6 +67,8 @@ const initialMessage =
     'Welcome to the StudentEase chat section. How may we help you today';
 const relatedToLiteral = 'related to';
 const deleteLiteral = 'Delete';
+const couldNotRetrieveRecommendationsLiteral =
+    'Could not retrieve recommendations';
 
 // Options
 const option1LongLiteral =
