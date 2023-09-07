@@ -21,6 +21,8 @@ const snippetValue = 'snippet';
 const qKey = 'q';
 const maxResultsKey = 'maxResults';
 const keyKey = 'key';
+const typeKey = 'type';
+const videoValue = 'video';
 
 // Endpoints
 const chatBaseUrl = 'https://hook.eu1.make.com';
@@ -45,6 +47,8 @@ const helloIllustrationPath = '$_assetsPath/hello_illustration.png';
 const robotPath = '$_assetsPath/robot.png';
 const welcomeIllustrationPath = '$_assetsPath/welcome_illustration.png';
 const serverDownIllustrationPath = '$_assetsPath/server_down_illustration.png';
+const imageIllustrationPath = '$_assetsPath/image_illustration.png';
+const avatarIllustrationPath = '$_assetsPath/avatar_illustration.png';
 
 // UI literals
 const helloLiteral = 'Hello';
@@ -61,6 +65,7 @@ const welcomeToStudentEaseLiteral = 'Welcome to StudentEase';
 const yourPersonalizedVirtualStudentSupportServiceLiteral =
     'Your personalized virtual student support service';
 const chatLiteral = 'Chat';
+const homeLiteral = 'Home';
 const couldNotGetChatsLiteral = 'Could not get chats';
 const couldNotSendMessageLiteral = 'Could not send message';
 const initialMessage =

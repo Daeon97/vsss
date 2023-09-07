@@ -90,7 +90,9 @@ class _ChatScreenState extends State<ChatScreen> {
           edgeInsetsGeometry: const EdgeInsetsDirectional.only(
             bottom: spacing,
           ),
-          title: chatLiteral,
+          appBarTitle: const Text(
+            chatLiteral,
+          ),
           child: Column(
             children: [
               Expanded(

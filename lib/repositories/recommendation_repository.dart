@@ -37,6 +37,7 @@ final class CourseRecommendationRepository implements RecommendationRepository {
         queryParameters: <String, dynamic>{
           partKey: snippetValue,
           qKey: transformedCourseOfStudy,
+          typeKey: videoValue,
           maxResultsKey: maxNumberOfVideosToReturnFromApi,
           keyKey: dotenv.env[youtubeDataApiKey],
         },

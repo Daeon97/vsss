@@ -26,3 +26,4 @@ const chatScreenBottomLayoutOptionsDy = 4.0;
 const chatScreenRobotImageWidthAndHeight = 40.0;
 const chatsListViewScrollAnimationDuration = 300;
 const maxNumberOfVideosToReturnFromApi = 20;
+const videoRecommendationsImageHeight = 200.0;

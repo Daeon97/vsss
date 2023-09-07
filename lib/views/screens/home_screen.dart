@@ -29,6 +29,64 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) => ScreenScaffold(
+        appBarTitle: BlocBuilder<UserCubit, UserState>(
+          builder: (
+            _,
+            userState,
+          ) =>
+              Text(
+            switch (userState.user) {
+              null => homeLiteral,
+              _ => helloLiteral +
+                  comma +
+                  whiteSpace +
+                  userState.user!.name
+                      .split(
+                        RegExp(
+                          nameSplitRegexPattern,
+                        ),
+                      )
+                      .first
+            },
+          ),
+        ),
+        appBarLeading: Row(
+          children: [
+            const SizedBox(
+              width: spacing,
+            ),
+            CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.onSecondary,
+              child: BlocBuilder<UserCubit, UserState>(
+                builder: (
+                  _,
+                  userState,
+                ) =>
+                    switch (userState.user) {
+                  null => Image.asset(
+                      avatarIllustrationPath,
+                    ),
+                  _ => Text(
+                      userState.user!.name
+                          .split(
+                            RegExp(
+                              nameSplitRegexPattern,
+                            ),
+                          )
+                          .first
+                          .split(
+                            emptyString,
+                          )
+                          .first,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                    )
+                },
+              ),
+            ),
+          ],
+        ),
         useScrollView: false,
         centerViewVertically: false,
         edgeInsetsGeometry: EdgeInsets.zero,
@@ -65,21 +123,120 @@ class _HomeScreenState extends State<HomeScreen> {
                     top: index == zero ? spacing : nil,
                     bottom: spacing,
                   ),
-                  child: Container(
-                    padding: const EdgeInsetsDirectional.all(
-                      spacing,
-                    ),
-                    margin: const EdgeInsetsDirectional.symmetric(
-                      horizontal: spacing,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadiusDirectional.circular(
-                        spacing,
-                      ),
-                    ),
-                    child: Text(
-                      videoRecommendations.items[index].snippet.title,
+                  child: InkWell(
+                    onTap: () {},
+                    child: Column(
+                      children: [
+                        Container(
+                          height: videoRecommendationsImageHeight,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                videoRecommendations.items[index].snippet
+                                        .thumbnails.high?.url ??
+                                    videoRecommendations.items[index].snippet
+                                        .thumbnails.medium?.url ??
+                                    videoRecommendations.items[index].snippet
+                                        .thumbnails.mDefault!.url,
+                              ),
+                              fit: BoxFit.fitWidth,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius:
+                                const BorderRadiusDirectional.vertical(
+                              bottom: Radius.circular(
+                                spacing,
+                              ),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                height: smallSpacing,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: spacing,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.title,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary,
+                                    ),
+                                    const SizedBox(
+                                      width: smallSpacing,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        videoRecommendations
+                                            .items[index].snippet.title,
+                                        maxLines: three,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSecondary,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: smallSpacing,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: spacing,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.description,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary,
+                                    ),
+                                    const SizedBox(
+                                      width: smallSpacing,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                        videoRecommendations
+                                            .items[index].snippet.description,
+                                        maxLines: three,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall
+                                            ?.copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSecondary,
+                                            ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                height: smallSpacing,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

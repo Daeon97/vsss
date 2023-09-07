@@ -12,7 +12,8 @@ class ScreenScaffold extends StatelessWidget {
     bool centerViewVertically = true,
     EdgeInsetsGeometry? edgeInsetsGeometry,
     FloatingActionButton? floatingActionButton,
-    String? title,
+    Widget? appBarTitle,
+    Widget? appBarLeading,
     super.key,
   })  : _child = child,
         _useScaffold = useScaffold,
@@ -21,7 +22,8 @@ class ScreenScaffold extends StatelessWidget {
         _centerViewVertically = centerViewVertically,
         _edgeInsetsGeometry = edgeInsetsGeometry,
         _floatingActionButton = floatingActionButton,
-        _title = title;
+        _appBarTitle = appBarTitle,
+        _appBarLeading = appBarLeading;
 
   final Widget _child;
   final bool _useScaffold;
@@ -30,17 +32,17 @@ class ScreenScaffold extends StatelessWidget {
   final bool _centerViewVertically;
   final EdgeInsetsGeometry? _edgeInsetsGeometry;
   final FloatingActionButton? _floatingActionButton;
-  final String? _title;
+  final Widget? _appBarTitle;
+  final Widget? _appBarLeading;
 
   @override
   Widget build(BuildContext context) => switch (_useScaffold) {
         true => Scaffold(
-            appBar: switch (_title) {
+            appBar: switch (_appBarTitle) {
               null => null,
               _ => AppBar(
-                  title: Text(
-                    _title!,
-                  ),
+                  leading: _appBarLeading,
+                  title: _appBarTitle,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadiusDirectional.vertical(
                       bottom: Radius.circular(
