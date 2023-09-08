@@ -22,16 +22,31 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   late final ScrollController _chatsListViewScrollController;
+  late final ValueNotifier<bool> _scrollNotifier;
 
   @override
   void initState() {
-    _chatsListViewScrollController = ScrollController();
+    _scrollNotifier = ValueNotifier<bool>(
+      true,
+    );
+    _chatsListViewScrollController = ScrollController(
+      onAttach: (scrollPosition) async {
+        await Future<void>.delayed(
+          const Duration(
+            milliseconds: waitTimeBeforeScrollingToEndOfChat,
+          ),
+        );
+        await _animateToEnd();
+        _scrollNotifier.value = false;
+      },
+    );
     context.read<ChatsCubit>().chats;
     super.initState();
   }
 
   @override
   void deactivate() {
+    _scrollNotifier.dispose();
     context.read<ChatsCubit>().closeDatabase();
     super.deactivate();
   }
@@ -44,7 +59,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _getChats() => context.read<ChatsCubit>().chats;
 
-  void _scrollToEnd() => _chatsListViewScrollController.animateTo(
+  Future<void> _animateToEnd() => _chatsListViewScrollController.animateTo(
         _chatsListViewScrollController.position.maxScrollExtent,
         duration: const Duration(
           milliseconds: chatsListViewScrollAnimationDuration,
@@ -55,12 +70,25 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) => MultiBlocListener(
         listeners: [
+          BlocListener<ChatsCubit, ChatsState>(
+            listener: (_, chatsState) async {
+              if (chatsState is LoadedChatsState) {
+                if (!_scrollNotifier.value) {
+                  await Future<void>.delayed(
+                    const Duration(
+                      milliseconds: waitTimeBeforeScrollingToEndOfChat,
+                    ),
+                  );
+                  await _animateToEnd();
+                }
+              }
+            },
+          ),
           BlocListener<SendMessageCubit, SendMessageState>(
             listener: (_, sendMessageState) {
               if (sendMessageState is FailedToSendMessageState ||
                   sendMessageState is SentMessageState) {
                 _getChats();
-                // _scrollToEnd();
               }
             },
           ),
@@ -68,7 +96,6 @@ class _ChatScreenState extends State<ChatScreen> {
             listener: (_, deleteChatState) {
               if (deleteChatState is DeletedChatState) {
                 _getChats();
-                // _scrollToEnd();
               }
             },
           ),
@@ -76,7 +103,6 @@ class _ChatScreenState extends State<ChatScreen> {
             listener: (_, cacheMessageState) {
               if (cacheMessageState is CachedMessageState) {
                 _getChats();
-                // _scrollToEnd();
                 context.read<SendMessageCubit>().sendMessage(
                       cacheMessageState.message,
                     );
